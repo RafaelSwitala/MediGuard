@@ -1,0 +1,11 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <style name="Theme.MediGuard.Splash" parent="Theme.MediGuard">
+        <item name="android:windowSplashScreenBackground">@color/logo_background</item>
+        <item name="android:windowSplashScreenAnimatedIcon">@drawable/app_logo_transparent</item>
+        <item name="android:windowSplashScreenIconBackgroundColor">@android:color/transparent</item>
+        <item name="android:statusBarColor">@color/logo_background</item>
+        <item name="android:navigationBarColor">@color/logo_background</item>
+        <item name="android:colorBackground">@color/logo_background</item>
+    </style>
+</resources>

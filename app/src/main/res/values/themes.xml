@@ -1,0 +1,24 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <style name="Theme.MediGuard" parent="android:Theme.Material.Light.NoActionBar">
+        <item name="android:colorPrimary">@color/primary</item>
+        <item name="android:colorPrimaryDark">@color/primary_dark</item>
+        <item name="android:colorAccent">@color/secondary</item>
+        <item name="android:colorBackground">@color/background</item>
+        <item name="android:statusBarColor">@color/logo_background</item>
+    </style>
+
+    <style name="Theme.MediGuard.Splash" parent="Theme.MediGuard">
+        <item name="android:windowBackground">@drawable/splash_background</item>
+        <item name="android:colorBackground">@color/logo_background</item>
+        <item name="android:statusBarColor">@color/logo_background</item>
+        <item name="android:navigationBarColor">@color/logo_background</item>
+    </style>
+
+    <style name="Theme.MediGuard.Dialog" parent="android:style/Theme.Material.Light.NoActionBar">
+        <item name="android:windowIsTranslucent">true</item>
+        <item name="android:windowNoTitle">true</item>
+        <item name="android:windowCloseOnTouchOutside">true</item>
+        <item name="android:colorAccent">@color/secondary</item>
+    </style>
+</resources>

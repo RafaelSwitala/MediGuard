@@ -1,0 +1,53 @@
+<resources>
+    <string name="app_name">MediGuard</string>
+    <string name="app_description">Medication Reminders with Direct Boot Support</string>
+
+    <!-- Home Screen -->
+    <string name="home_title">MediGuard</string>
+    <string name="no_medications">No medications yet</string>
+    <string name="add_first_medication">Add your first medication to get started</string>
+
+    <!-- Add Medication Screen -->
+    <string name="add_medication">Add Medication</string>
+    <string name="medication_name">Medication Name</string>
+    <string name="dosage">Dosage</string>
+    <string name="dosage_unit">Unit (e.g., mg)</string>
+    <string name="description_optional">Description (Optional)</string>
+    <string name="add_button">Add Medication</string>
+    <string name="back">Back</string>
+
+    <!-- History Screen -->
+    <string name="intake_history">Intake History</string>
+    <string name="no_history">No intake history yet</string>
+    <string name="status">Status</string>
+
+    <!-- Settings -->
+    <string name="settings">Settings</string>
+    <string name="language">Language: English / German support</string>
+    <string name="notifications">Notification settings available</string>
+
+    <!-- Notifications -->
+    <string name="medication_reminder">Time for your medication!</string>
+    <string name="unlock_to_see_details">Unlock your device to see details</string>
+    <string name="please_take">Please take %s</string>
+    <string name="dosage_info">Dosage: %s</string>
+
+    <!-- Status -->
+    <string name="pending">Pending</string>
+    <string name="confirmed">Confirmed</string>
+    <string name="missed">Missed</string>
+    <string name="snoozed">Snoozed</string>
+
+    <!-- Schedule Types -->
+    <string name="exact_time">Exact Time</string>
+    <string name="time_range">Time Range</string>
+    <string name="weekly">Weekly</string>
+    <string name="interval">Interval</string>
+    <string name="daily_period">Daily Period</string>
+
+    <!-- Day Periods -->
+    <string name="morning">Morning</string>
+    <string name="noon">Noon</string>
+    <string name="evening">Evening</string>
+    <string name="night">Night</string>
+</resources>
