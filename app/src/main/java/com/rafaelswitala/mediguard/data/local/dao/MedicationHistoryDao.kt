@@ -1,5 +1,9 @@
 package com.rafaelswitala.mediguard.data.local.dao
 
+/**
+ * Datenzugriff: Einnahmeverlauf speichern und abrufen.
+ */
+
 import androidx.room.Dao
 import androidx.room.Delete
 import androidx.room.Insert

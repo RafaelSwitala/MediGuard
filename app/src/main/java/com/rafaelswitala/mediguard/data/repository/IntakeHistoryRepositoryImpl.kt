@@ -1,5 +1,9 @@
 package com.rafaelswitala.mediguard.data.repository
 
+/**
+ * Implementierung des IntakeHistoryRepository: Speicherung und Abruf des Einnahmeverlaufs.
+ */
+
 import com.rafaelswitala.mediguard.data.local.dao.IntakeHistoryDao
 import com.rafaelswitala.mediguard.data.local.entity.IntakeHistoryEntity
 import com.rafaelswitala.mediguard.domain.model.IntakeHistory

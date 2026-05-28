@@ -1,6 +1,11 @@
 package com.rafaelswitala.mediguard.domain.model
 
 /**
+ * Definiert, wann und wie oft ein Medikament eingenommen werden soll.
+ * Unterscheidet zwischen exakten Uhrzeiten, Zeiträumen und Intervallen.
+ */
+
+/**
  * Domain model for MedicationSchedule
  * Handles various scheduling strategies using polymorphism
  */

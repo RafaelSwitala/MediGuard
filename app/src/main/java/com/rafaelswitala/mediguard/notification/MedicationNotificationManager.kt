@@ -1,5 +1,10 @@
 package com.rafaelswitala.mediguard.notification
 
+/**
+ * Erstellt und verwaltet Benachrichtigungen für Medikamentenerinnerungen.
+ * Unterstützt Datenschutz-Modus (Gerät gesperrt) und gruppierte Benachrichtigungen.
+ */
+
 import android.app.NotificationChannel
 import android.app.NotificationManager
 import android.app.PendingIntent

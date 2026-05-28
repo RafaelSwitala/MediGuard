@@ -1,5 +1,10 @@
 package com.rafaelswitala.mediguard.alarm
 
+/**
+ * Verarbeitet Startsignale und stellt alle Erinnerungen nach Neustart wieder her.
+ * Behandelt LOCKED_BOOT_COMPLETED, BOOT_COMPLETED und USER_UNLOCKED Ereignisse.
+ */
+
 import android.content.BroadcastReceiver
 import android.content.Context
 import android.content.Intent

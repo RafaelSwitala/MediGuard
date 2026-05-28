@@ -1,5 +1,9 @@
 package com.rafaelswitala.mediguard.ui.navigation
 
+/**
+ * Routendefinitionen und NavHost für 5 Hauptscreens (Startseite, Medikamente, Hinzufügen, Verlauf, Einstellungen).
+ */
+
 import androidx.compose.runtime.Composable
 import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.navigation.NavType
@@ -17,7 +21,7 @@ import com.rafaelswitala.mediguard.viewmodel.MedicationViewModel
 import com.rafaelswitala.mediguard.viewmodel.SettingsViewModel
 
 /**
- * Navigation routes for the app
+ * Definiert die internen Routen der App.
  */
 sealed class Route(val route: String) {
     data object Home : Route("home")
@@ -31,7 +35,7 @@ sealed class Route(val route: String) {
 }
 
 /**
- * App navigation host with all screens
+ * Verknüpft Routen mit den jeweiligen Compose-Screens.
  */
 @Composable
 fun AppNavigation(navController: NavHostController) {

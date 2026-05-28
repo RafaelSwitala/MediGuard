@@ -4,9 +4,11 @@ import com.rafaelswitala.mediguard.domain.model.FrequencyType
 import com.rafaelswitala.mediguard.domain.model.Medication
 import com.rafaelswitala.mediguard.domain.model.MedicationSchedule
 import com.rafaelswitala.mediguard.domain.model.ScheduleDataCodec
-import com.rafaelswitala.mediguard.domain.reminder.ReminderPlanFactory
-import java.util.Calendar
 
+/**
+ * Datei für die Gruppierungslogik.
+ * Erkennt Einnahmen, die zeitlich nah beieinander liegen und gemeinsam erinnert werden können.
+ */
 data class ScheduleSignature(
     val frequencyType: FrequencyType,
     val dayMask: Int,
@@ -80,10 +82,10 @@ object MedicationGroupingService {
             val schedulesA = schedulesByMedication[medA.id].orEmpty()
             val schedulesB = schedulesByMedication[medB.id].orEmpty()
             schedulesA.forEach { schedA ->
-                schedulesB.forEach { schedB ->
+                schedulesB.forEach scheduleBLoop@{ schedB ->
                     val sigA = signature(schedA)
                     val sigB = signature(schedB)
-                    if (!sameDayPattern(sigA, sigB)) return@forEach
+                    if (!sameDayPattern(sigA, sigB)) return@scheduleBLoop
                     sigA.triggerMinutes.forEach { minA ->
                         sigB.triggerMinutes.forEach { minB ->
                             val diff = kotlin.math.abs(minA - minB)

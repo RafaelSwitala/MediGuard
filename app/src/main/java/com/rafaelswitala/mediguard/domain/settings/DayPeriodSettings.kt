@@ -1,5 +1,10 @@
 package com.rafaelswitala.mediguard.domain.settings
 
+/**
+ * Datei für Tageszeit-Einstellungen und deren Validierung.
+ * Wichtig: Nur die zentrale Aufgabe dieser Komponente ist hier kommentiert.
+ */
+
 import com.rafaelswitala.mediguard.domain.model.DayPeriod
 import org.json.JSONObject
 

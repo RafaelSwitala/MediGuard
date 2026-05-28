@@ -1,5 +1,9 @@
 package com.rafaelswitala.mediguard.data.local.entity
 
+/**
+ * Datenbanktabelle für den Einnahmeverlauf mit Status und Zeitstempeln.
+ */
+
 import androidx.room.Entity
 import androidx.room.ForeignKey
 import androidx.room.Index

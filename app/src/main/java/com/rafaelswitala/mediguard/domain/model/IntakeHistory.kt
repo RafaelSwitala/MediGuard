@@ -1,10 +1,13 @@
 package com.rafaelswitala.mediguard.domain.model
 
+/**
+ * Speichert die Einnahmebestätigung und den Status einer Medikamenteneinnahme.
+ */
+
 import com.rafaelswitala.mediguard.ui.localization.AppStrings
 
 /**
- * Domain model for IntakeHistory
- * Tracks medication intake confirmations
+ * Entweder ausstehend, bestätigt, verpasst oder als „Schlummer" gekennzeichnet.
  */
 data class IntakeHistory(
     val id: Long = 0,

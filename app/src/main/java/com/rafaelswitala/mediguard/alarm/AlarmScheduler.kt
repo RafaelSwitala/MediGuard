@@ -1,5 +1,9 @@
 package com.rafaelswitala.mediguard.alarm
 
+/**
+ * Schnittstelle für die Planung und Verwaltung von Weckrufen.
+ */
+
 import android.app.AlarmManager
 import android.app.PendingIntent
 import android.content.Context

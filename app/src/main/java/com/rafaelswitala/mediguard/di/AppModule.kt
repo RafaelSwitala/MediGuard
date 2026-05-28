@@ -24,8 +24,8 @@ import dagger.hilt.components.SingletonComponent
 import javax.inject.Singleton
 
 /**
- * Hilt dependency injection module
- * Provides singletons for database, DAOs, repositories, and other services
+ * Hilt Dependency Injection: Stellt Datenbank, DAOs, Repositories und Alarm-Scheduler bereit.
+ * Definiert Datenbank-Migrationen für alle Schema-Versionen.
  */
 @Module
 @InstallIn(SingletonComponent::class)
@@ -63,7 +63,18 @@ object AppModule {
         }
     }
 
-    // Database
+    private val MIGRATION_5_6 = object : Migration(5, 6) {
+        override fun migrate(database: SupportSQLiteDatabase) {
+            database.execSQL("ALTER TABLE medications ADD COLUMN remainingDosesDecimal REAL")
+            database.execSQL("ALTER TABLE medications ADD COLUMN doseQuantityDecimal REAL NOT NULL DEFAULT 1.0")
+            database.execSQL(
+                "UPDATE medications SET remainingDosesDecimal = CAST(remainingDoses AS REAL) " +
+                    "WHERE remainingDoses IS NOT NULL"
+            )
+            database.execSQL("UPDATE medications SET doseQuantityDecimal = CAST(doseQuantity AS REAL)")
+        }
+    }
+
     @Provides
     @Singleton
     fun provideAppDatabase(
@@ -73,10 +84,15 @@ object AppModule {
         AppDatabase::class.java,
         AppDatabase.DATABASE_NAME
     )
-        .addMigrations(MIGRATION_1_2, MIGRATION_2_3, MIGRATION_3_4, MIGRATION_4_5)
+        .addMigrations(
+            MIGRATION_1_2,
+            MIGRATION_2_3,
+            MIGRATION_3_4,
+            MIGRATION_4_5,
+            MIGRATION_5_6
+        )
         .build()
 
-    // DAOs
     @Provides
     @Singleton
     fun provideMedicationDao(database: AppDatabase): MedicationDao =
@@ -92,7 +108,6 @@ object AppModule {
     fun provideIntakeHistoryDao(database: AppDatabase): IntakeHistoryDao =
         database.intakeHistoryDao()
 
-    // Repositories
     @Provides
     @Singleton
     fun provideMedicationRepository(

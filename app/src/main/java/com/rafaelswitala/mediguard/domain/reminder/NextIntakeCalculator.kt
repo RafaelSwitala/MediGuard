@@ -1,5 +1,9 @@
 package com.rafaelswitala.mediguard.domain.reminder
 
+/**
+ * Berechnet die nächste fällige Medikamenteneinnahmezeit basierend auf Zeitplan und Erinnerungstyp.
+ */
+
 import com.rafaelswitala.mediguard.domain.model.Medication
 import com.rafaelswitala.mediguard.domain.model.MedicationSchedule
 import com.rafaelswitala.mediguard.domain.settings.DayPeriodSettings

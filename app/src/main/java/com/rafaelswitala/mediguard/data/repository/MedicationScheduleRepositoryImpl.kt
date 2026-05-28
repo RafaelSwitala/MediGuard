@@ -1,5 +1,9 @@
 package com.rafaelswitala.mediguard.data.repository
 
+/**
+ * Implementierung des MedicationScheduleRepository: Verwaltung von Erinnerungszeiten in der Datenbank.
+ */
+
 import com.rafaelswitala.mediguard.data.local.dao.MedicationScheduleDao
 import com.rafaelswitala.mediguard.data.local.entity.MedicationScheduleEntity
 import com.rafaelswitala.mediguard.domain.model.FrequencyType

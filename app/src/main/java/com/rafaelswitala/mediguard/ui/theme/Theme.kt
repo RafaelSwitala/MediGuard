@@ -1,5 +1,9 @@
 package com.rafaelswitala.mediguard.ui.theme
 
+/**
+ * MediGuardTheme Composable mit dynamischer Farbunterstützung (Android 12+).
+ */
+
 import android.app.Activity
 import android.os.Build
 import androidx.compose.foundation.isSystemInDarkTheme

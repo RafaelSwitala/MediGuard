@@ -1,5 +1,10 @@
 package com.rafaelswitala.mediguard.ui.screens
 
+/**
+ * Formular zum Erstellen/Bearbeiten von Medikamenten mit erweiterbarem Zeitplan-Builder.
+ * Unterstützt exakte Zeit, Zeiträume, Intervalle, wöchentliche und Tageszeiten-Pläne.
+ */
+
 import androidx.compose.foundation.horizontalScroll
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
@@ -48,10 +53,15 @@ import com.rafaelswitala.mediguard.domain.model.MedicationFormType
 import com.rafaelswitala.mediguard.domain.model.MedicationSchedule
 import com.rafaelswitala.mediguard.domain.model.ScheduleDataCodec
 import com.rafaelswitala.mediguard.domain.model.TreatmentType
+import com.rafaelswitala.mediguard.domain.model.formatMedicationAmount
 import com.rafaelswitala.mediguard.ui.localization.LocalAppLanguage
 import com.rafaelswitala.mediguard.ui.localization.LocalAppStrings
 import com.rafaelswitala.mediguard.viewmodel.MedicationViewModel
 
+/**
+ * Datei für die Maske zum Erstellen und Bearbeiten einer Medikation.
+ * Wichtig sind valide Eingaben für Bestand, Dosierung und Erinnerungszeit.
+ */
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun AddMedicationScreen(
@@ -113,10 +123,10 @@ fun AddMedicationScreen(
             }
             durationDays = medication.durationDays?.toString().orEmpty()
             treatmentLimitDoses = medication.treatmentLimitDoses?.toString().orEmpty()
-            remainingDoses = medication.remainingDoses?.toString().orEmpty()
-            remainingVolumeMl = medication.remainingVolumeMl?.toString().orEmpty()
-            dosePerIntakeMl = medication.dosePerIntakeMl?.toString().orEmpty()
-            doseQuantity = medication.doseQuantity.toString()
+            remainingDoses = medication.remainingDoses?.let(::formatMedicationAmount).orEmpty()
+            remainingVolumeMl = medication.remainingVolumeMl?.let(::formatMedicationAmount).orEmpty()
+            dosePerIntakeMl = medication.dosePerIntakeMl?.let(::formatMedicationAmount).orEmpty()
+            doseQuantity = formatMedicationAmount(medication.doseQuantity)
             medicationFormType = medication.medicationFormType
             supplyAlertEnabled = medication.supplyAlertEnabled
             supplyAlertThreshold = medication.supplyAlertThreshold.toString()
@@ -145,8 +155,17 @@ fun AddMedicationScreen(
         weeklyTime = weeklyTime,
         selectedDays = selectedDays
     )
+    val doseQuantityValue = parseDecimalAmount(doseQuantity)
+    val stockInputIsValid = if (medicationFormType.usesVolume()) {
+        remainingVolumeMl.isBlank() || parseDecimalAmount(remainingVolumeMl) != null
+    } else {
+        remainingDoses.isBlank() || parseDecimalAmount(remainingDoses) != null
+    }
     val canSave = medicationName.isNotBlank() &&
         dosage.isNotBlank() &&
+        doseQuantityValue != null &&
+        doseQuantityValue >= MINIMUM_DOSE &&
+        stockInputIsValid &&
         scheduleDrafts.isNotEmpty() &&
         hasValidTreatmentLimit(treatmentType, treatmentLimitMode, durationDays, treatmentLimitDoses)
 
@@ -194,10 +213,22 @@ fun AddMedicationScreen(
                         ) {
                             treatmentLimitDoses.toIntOrNull()
                         } else null,
-                        remainingDoses = if (medicationFormType.usesVolume()) null else remainingDoses.toIntOrNull(),
-                        remainingVolumeMl = if (medicationFormType.usesVolume()) remainingVolumeMl.toDoubleOrNull() else null,
-                        dosePerIntakeMl = if (medicationFormType.usesVolume()) dosePerIntakeMl.toDoubleOrNull() else null,
-                        doseQuantity = doseQuantity.toIntOrNull()?.coerceAtLeast(1) ?: 1,
+                        remainingDoses = if (medicationFormType.usesVolume()) {
+                            null
+                        } else {
+                            parseDecimalAmount(remainingDoses)
+                        },
+                        remainingVolumeMl = if (medicationFormType.usesVolume()) {
+                            parseDecimalAmount(remainingVolumeMl)
+                        } else {
+                            null
+                        },
+                        dosePerIntakeMl = if (medicationFormType.usesVolume()) {
+                            parseDecimalAmount(dosePerIntakeMl)
+                        } else {
+                            null
+                        },
+                        doseQuantity = parseDecimalAmount(doseQuantity)?.coerceAtLeast(MINIMUM_DOSE) ?: 1.0,
                         medicationFormType = medicationFormType,
                         intakeGroupId = baseMedication?.intakeGroupId,
                         supplyAlertEnabled = supplyAlertEnabled,
@@ -300,11 +331,11 @@ fun AddMedicationScreen(
 
                 OutlinedTextField(
                     value = doseQuantity,
-                    onValueChange = { doseQuantity = it.filter(Char::isDigit) },
+                    onValueChange = { doseQuantity = filterDecimalInput(it) },
                     label = { Text(strings.doseQuantity) },
                     modifier = Modifier.fillMaxWidth(),
                     maxLines = 1,
-                    keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Number)
+                    keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Decimal)
                 )
             }
 
@@ -358,7 +389,7 @@ fun AddMedicationScreen(
                 if (medicationFormType.usesVolume()) {
                     OutlinedTextField(
                         value = remainingVolumeMl,
-                        onValueChange = { remainingVolumeMl = it.filter { c -> c.isDigit() || c == '.' } },
+                        onValueChange = { remainingVolumeMl = filterDecimalInput(it) },
                         label = { Text(strings.remainingVolume) },
                         modifier = Modifier.fillMaxWidth(),
                         maxLines = 1,
@@ -366,7 +397,7 @@ fun AddMedicationScreen(
                     )
                     OutlinedTextField(
                         value = dosePerIntakeMl,
-                        onValueChange = { dosePerIntakeMl = it.filter { c -> c.isDigit() || c == '.' } },
+                        onValueChange = { dosePerIntakeMl = filterDecimalInput(it) },
                         label = { Text(strings.dosePerIntake) },
                         modifier = Modifier.fillMaxWidth(),
                         maxLines = 1,
@@ -375,11 +406,11 @@ fun AddMedicationScreen(
                 } else {
                     OutlinedTextField(
                         value = remainingDoses,
-                        onValueChange = { remainingDoses = it.filter(Char::isDigit) },
+                        onValueChange = { remainingDoses = filterDecimalInput(it) },
                         label = { Text(strings.tabletsLeft) },
                         modifier = Modifier.fillMaxWidth(),
                         maxLines = 1,
-                        keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Number)
+                        keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Decimal)
                     )
                 }
                 Row(
@@ -798,3 +829,25 @@ private fun parseTime(value: String): Pair<Int, Int>? {
 
 private fun formatTime(hour: Int, minute: Int): String =
     "${hour.toString().padStart(2, '0')}:${minute.toString().padStart(2, '0')}"
+
+private fun filterDecimalInput(value: String): String {
+    var hasSeparator = false
+    return value.filter { char ->
+        when {
+            char.isDigit() -> true
+            (char == ',' || char == '.') && !hasSeparator -> {
+                hasSeparator = true
+                true
+            }
+            else -> false
+        }
+    }
+}
+
+private fun parseDecimalAmount(value: String): Double? =
+    value.trim()
+        .replace(',', '.')
+        .toDoubleOrNull()
+        ?.takeIf { it >= 0.0 }
+
+private const val MINIMUM_DOSE = 0.01

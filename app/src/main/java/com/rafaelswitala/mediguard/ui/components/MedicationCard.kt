@@ -1,5 +1,9 @@
 package com.rafaelswitala.mediguard.ui.components
 
+/**
+ * Kompakte Medikament-Anzeige mit Dosierung, Dauer, Bestand und Gruppenfarbe.
+ */
+
 import androidx.compose.foundation.ExperimentalFoundationApi
 import androidx.compose.foundation.background
 import androidx.compose.foundation.combinedClickable
@@ -20,9 +24,14 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.unit.dp
 import com.rafaelswitala.mediguard.domain.model.Medication
+import com.rafaelswitala.mediguard.domain.model.formatMedicationAmount
 import com.rafaelswitala.mediguard.ui.localization.LocalAppStrings
 import com.rafaelswitala.mediguard.ui.theme.IntakeGroupColors
 
+/**
+ * Datei für die kompakte Medikamentenkarte.
+ * Zeigt Stammdaten, Bestand und die farbliche Gruppenzuordnung.
+ */
 @OptIn(ExperimentalFoundationApi::class)
 @Composable
 fun MedicationCard(
@@ -94,9 +103,9 @@ fun MedicationCard(
                     style = MaterialTheme.typography.bodyMedium,
                     color = MaterialTheme.colorScheme.onSurfaceVariant
                 )
-                if (medication.doseQuantity > 1) {
+                if (medication.doseQuantity > 1.0) {
                     Text(
-                        text = "${strings.doseQuantity}: ${medication.doseQuantity}",
+                        text = "${strings.doseQuantity}: ${formatMedicationAmount(medication.doseQuantity)}",
                         style = MaterialTheme.typography.bodySmall,
                         color = MaterialTheme.colorScheme.onSurfaceVariant
                     )

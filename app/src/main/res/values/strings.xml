@@ -31,6 +31,7 @@
     <string name="unlock_to_see_details">Unlock your device to see details</string>
     <string name="please_take">Please take %s</string>
     <string name="dosage_info">Dosage: %s</string>
+    <string name="stop_alarm">Stop alarm</string>
 
     <!-- Status -->
     <string name="pending">Pending</string>

@@ -1,5 +1,9 @@
 package com.rafaelswitala.mediguard.ui.components
 
+/**
+ * Wiederverwendbare Abschnittskarte mit optionaler Überschrift und einheitlichen Abständen.
+ */
+
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.ColumnScope

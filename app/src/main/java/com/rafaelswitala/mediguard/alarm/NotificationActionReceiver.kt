@@ -1,5 +1,9 @@
 package com.rafaelswitala.mediguard.alarm
 
+/**
+ * Verarbeitet Benutzeraktionen aus Benachrichtigungen (Bestätigen, Verschieben).
+ */
+
 import android.content.BroadcastReceiver
 import android.content.Context
 import android.content.Intent

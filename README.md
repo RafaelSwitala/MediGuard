@@ -52,9 +52,8 @@ Speichert:
 ### DE (Device Encrypted)
 Speichert:
 - Alarmzeiten
-- Bestätigung: Wurde Medikament genommen? Wenn nein: Erinnerung in x minuten (Soll User selbst einstellen (5, 10, 15, 30, 60 min, Schlummer oder so ähnlich (wie beim normalen handy-wecker)))
+- Bestätigung: Wurde Medikament genommen? Wenn nein: Erinnerung in x minuten (Soll User selbst einstellen (5, 10, 15, 30, 60 min, Schlummer (wie beim normalen handy-wecker)))
 - Alarm IDs
-- Minimale Reminder-Metadaten
 
 ## AlarmManager
 - `setExactAndAllowWhileIdle()`
@@ -62,10 +61,10 @@ Speichert:
 
 ## Notifications
 ### Vor Unlock:
-"Time for your medication!" <!--  Aber nur wenn es wirklich bald soweit ist -->
+"Time for your medication!"
 
 ### Nach Unlock:
-"Please take 20mg Ibuprofen now." <!--  Aber nur wenn es wirklich bald soweit ist-->
+"Please take 20mg Ibuprofen now."
 
 ---
 
@@ -75,26 +74,19 @@ Speichert:
 - Jetpack Compose
 - Bottom navigation
 - Große Touch-Zonen
-- Minimale Eingabemasken
-- Priorisierung Daumenbereich
 
 ## Performance
 - Room lokal
 - Keine Cloud-Pflicht
-- LazyColumn
-- StateFlow
 - ViewModel
-- WorkManager nur wenn notwendig
 
 ## Speicher
 - Kleine APK
-- ProGuard / R8 aktivieren
 - Nur notwendige Libraries
 
 ## Akku
 - AlarmManager statt permanenter Services
 - BroadcastReceiver
-- Keine Polling-Prozesse
 
 ---
 
@@ -273,13 +265,13 @@ enum class FrequencyType {
 
 ---
 
-## Phase 5 – Erweiterungen
+## Phase 5 – Mögliche Erweiterungen
 
 - Statistiken
-- Dark Mode
 - Export PDF
 - CSV oder JSON Export
-- Adhärenzrate
+- Eigene Gesundheitsdaten verwalten
+- Arztberichte erhalten
 
 ---
 
@@ -290,17 +282,12 @@ enum class FrequencyType {
 ### Speicherung:
 - Room Database
 - DataStore
-- SharedPreferences nur falls nötig
 
 ## Vorteile:
 - Keine Internetpflicht
 - Datenschutz
 - Geringer Datenverbrauch
 - Hohe Zuverlässigkeit
-
-## Synchronisierung optional:
-- Später Google Drive Backup
-- Firebase optional
 
 ---
 
@@ -315,13 +302,6 @@ Ja.
 - Unterschiedliche Einnahmeintervalle
 - Historie erforderlich
 - Maximal ~20 Medikamente realistisch
-
-## Aufwand Nutzer
-Akzeptabel bei guter UX:
-- Dropdowns
-- Templates
-- Wiederholungsoptionen
-- Auto-Vervollständigung
 
 ---
 
@@ -368,36 +348,6 @@ run {}
 ```kotlin
 object NotificationConstants
 ```
-
----
-
-# Zusätzliche Differenzierungsmerkmale
-
-## Besonders sinnvoll:
-
-### 1. Einnahme-Adhärenz Score
-- Prozentuale Einnahmetreue
-
-### 2. Smart Snooze
-- Erinnerung erneut nach X Minuten
-
-### 3. Medikamentenbestand
-- "Nur noch 3 Tabletten übrig"
-
-### 4. Exportfunktion
-- PDF für Arztbesuche
-
-### 5. Familienmodus
-- Pflege anderer Personen <!-- Nur eine Idee - Ich weiß hier noch nicht was genau gemeint ist -->
-
-### 6. Sprachsteuerung
-- Einnahme per Voice bestätigen <!-- Nur als Feature - Kein Pflicht. Ich denke tippen ist leichter als sprechen -->
-
-### 7. Widget
-- Homescreen Medikamentenübersicht
-
-### 8. WearOS Support
-- Smartwatch-Erinnerung
 
 ---
 
@@ -475,29 +425,3 @@ com.example.mediguard
 8. Screens
 
 ---
-
-
-
----
-
-# Zusammenfassung
-
-## Ziel
-Eine technisch anspruchsvolle, datenschutzorientierte Android-App mit:
-
-- Direct Boot
-- Professioneller Architektur
-- Offline First
-- Kotlin Best Practices
-- Kursrelevanten Programmierkonzepten
-- Erweiterungspotenzial
-
-## Positionierung
-Dieses Projekt hebt sich deutlich ab durch:
-
-- Sicherheitsarchitektur
-- Systemnähe
-- Moderne Android Standards
-- Erweiterbarkeit
-- Wissenschaftlich begründbare Technologieentscheidungen
-

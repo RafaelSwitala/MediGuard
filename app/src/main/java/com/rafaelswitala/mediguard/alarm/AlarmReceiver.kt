@@ -1,5 +1,10 @@
 package com.rafaelswitala.mediguard.alarm
 
+/**
+ * Empfängt wiederkehrende Weckrufe und verarbeitet Medikamentengruppen.
+ * Triggert Benachrichtigungen und ordnet ähnliche Zeitpläne zu Gruppen.
+ */
+
 import android.content.BroadcastReceiver
 import android.content.Context
 import android.content.Intent

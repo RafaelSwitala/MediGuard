@@ -1,5 +1,9 @@
 package com.rafaelswitala.mediguard.data.repository
 
+/**
+ * Implementierung des MedicationRepository: Datenbankzugriff auf Medikamente und Bestandsverwaltung.
+ */
+
 import com.rafaelswitala.mediguard.data.local.dao.MedicationDao
 import com.rafaelswitala.mediguard.data.local.entity.MedicationEntity
 import com.rafaelswitala.mediguard.domain.model.Medication
@@ -10,6 +14,10 @@ import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.map
 import javax.inject.Inject
 
+/**
+ * Repository-Implementierung für Medikamente.
+ * Übersetzt zwischen Room-Entities und Domain-Modellen und verwaltet den Bestand.
+ */
 class MedicationRepositoryImpl @Inject constructor(
     private val medicationDao: MedicationDao
 ) : MedicationRepository {
@@ -41,14 +49,14 @@ class MedicationRepositoryImpl @Inject constructor(
         medicationDao.deactivateMedication(medicationId)
     }
 
-    override suspend fun updateRemainingDoses(medicationId: Long, remainingDoses: Int?) {
-        medicationDao.updateRemainingDoses(medicationId, remainingDoses)
+    override suspend fun updateRemainingDoses(medicationId: Long, remainingDoses: Double?) {
+        medicationDao.updateRemainingDosesDecimal(medicationId, remainingDoses)
     }
 
-    override suspend fun addRemainingDoses(medicationId: Long, addedAmount: Int) {
+    override suspend fun addRemainingDoses(medicationId: Long, addedAmount: Double) {
         val medication = getMedicationById(medicationId) ?: return
-        val current = medication.remainingDoses ?: 0
-        medicationDao.updateRemainingDoses(medicationId, current + addedAmount)
+        val current = medication.remainingDoses ?: 0.0
+        medicationDao.updateRemainingDosesDecimal(medicationId, current + addedAmount)
     }
 
     override suspend fun addRemainingVolume(medicationId: Long, addedMl: Double) {
@@ -61,13 +69,14 @@ class MedicationRepositoryImpl @Inject constructor(
         val medication = getMedicationById(medicationId) ?: return
         if (medication.medicationFormType.usesVolume()) {
             val perDose = medication.dosePerIntakeMl ?: return
-            val total = perDose * medication.doseQuantity.coerceAtLeast(1)
+            val total = perDose * medication.doseQuantity.coerceAtLeast(MINIMUM_DOSE)
             val next = medication.remainingVolumeMl?.minus(total)?.coerceAtLeast(0.0) ?: return
             medicationDao.updateRemainingVolume(medicationId, next)
         } else {
-            val next = medication.remainingDoses?.minus(medication.doseQuantity.coerceAtLeast(1))
-                ?.coerceAtLeast(0) ?: return
-            medicationDao.updateRemainingDoses(medicationId, next)
+            val next = medication.remainingDoses
+                ?.minus(medication.doseQuantity.coerceAtLeast(MINIMUM_DOSE))
+                ?.coerceAtLeast(0.0) ?: return
+            medicationDao.updateRemainingDosesDecimal(medicationId, next)
         }
     }
 
@@ -75,6 +84,7 @@ class MedicationRepositoryImpl @Inject constructor(
         medicationDao.updateIntakeGroup(medicationId, groupId)
     }
 
+    @Deprecated("Use updateIntakeGroup")
     override suspend fun updateMedicationGroup(medicationId: Long, groupName: String?) {
         medicationDao.updateMedicationGroup(medicationId, groupName?.takeIf { it.isNotBlank() })
     }
@@ -88,10 +98,12 @@ class MedicationRepositoryImpl @Inject constructor(
         treatmentType = treatmentType.name,
         durationDays = durationDays,
         treatmentLimitDoses = treatmentLimitDoses,
-        remainingDoses = remainingDoses,
+        remainingDoses = remainingDoses?.takeIf { it.rem(1.0) == 0.0 }?.toInt(),
+        remainingDosesDecimal = remainingDoses,
         remainingVolumeMl = remainingVolumeMl,
         dosePerIntakeMl = dosePerIntakeMl,
-        doseQuantity = doseQuantity,
+        doseQuantity = doseQuantity.takeIf { it.rem(1.0) == 0.0 }?.toInt() ?: 1,
+        doseQuantityDecimal = doseQuantity,
         medicationFormType = medicationFormType.name,
         intakeGroupId = intakeGroupId,
         groupName = groupName,
@@ -111,10 +123,10 @@ class MedicationRepositoryImpl @Inject constructor(
             .getOrDefault(TreatmentType.ONGOING),
         durationDays = durationDays,
         treatmentLimitDoses = treatmentLimitDoses,
-        remainingDoses = remainingDoses,
+        remainingDoses = remainingDosesDecimal ?: remainingDoses?.toDouble(),
         remainingVolumeMl = remainingVolumeMl,
         dosePerIntakeMl = dosePerIntakeMl,
-        doseQuantity = doseQuantity,
+        doseQuantity = doseQuantityDecimal.takeIf { it > 0.0 } ?: doseQuantity.toDouble(),
         medicationFormType = runCatching { MedicationFormType.valueOf(medicationFormType) }
             .getOrDefault(MedicationFormType.TABLET),
         intakeGroupId = intakeGroupId,
@@ -124,4 +136,8 @@ class MedicationRepositoryImpl @Inject constructor(
         createdAt = createdAt,
         isActive = isActive
     )
+
+    companion object {
+        private const val MINIMUM_DOSE = 0.01
+    }
 }

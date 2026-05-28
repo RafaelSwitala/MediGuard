@@ -1,5 +1,10 @@
 package com.rafaelswitala.mediguard.domain.model
 
+/**
+ * Definiert die Darreichungsform eines Medikaments (Tablette, Sirup, Spray).
+ * Bestimmt die Bestandserfassung (Menge vs. Anzahl) und Standardwerte.
+ */
+
 import com.rafaelswitala.mediguard.data.settings.AppLanguage
 
 enum class MedicationFormType {

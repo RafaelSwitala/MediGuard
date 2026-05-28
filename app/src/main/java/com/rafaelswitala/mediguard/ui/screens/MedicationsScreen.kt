@@ -1,5 +1,9 @@
 package com.rafaelswitala.mediguard.ui.screens
 
+/**
+ * Medikamentenliste mit Auswahlmodus, Massenauswahl, Löschen und Gruppierungsvorschlägen.
+ */
+
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
@@ -28,7 +32,6 @@ import androidx.compose.material3.IconButton
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.NavigationBar
 import androidx.compose.material3.NavigationBarItem
-import androidx.compose.material3.OutlinedTextField
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
 import androidx.compose.material3.TextButton
@@ -50,12 +53,17 @@ import com.rafaelswitala.mediguard.domain.model.FrequencyType
 import com.rafaelswitala.mediguard.domain.model.Medication
 import com.rafaelswitala.mediguard.domain.model.MedicationSchedule
 import com.rafaelswitala.mediguard.domain.model.ScheduleDataCodec
+import com.rafaelswitala.mediguard.domain.model.formatMedicationAmount
 import com.rafaelswitala.mediguard.ui.components.MedicationCard
 import com.rafaelswitala.mediguard.ui.localization.AppStrings
 import com.rafaelswitala.mediguard.ui.localization.LocalAppLanguage
 import com.rafaelswitala.mediguard.ui.localization.LocalAppStrings
 import com.rafaelswitala.mediguard.viewmodel.MedicationViewModel
 
+/**
+ * Datei für die Medikamentenübersicht.
+ * Enthält Liste, Detaildialog, Mehrfachauswahl und Gruppierungsabfrage.
+ */
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun MedicationsScreen(
@@ -240,8 +248,8 @@ fun MedicationsScreen(
         GroupingPromptDialog(
             candidate = candidate,
             onDismiss = { viewModel.dismissGroupingPrompt() },
-            onConfirm = { hour, minute ->
-                viewModel.confirmGrouping(candidate, hour, minute)
+            onConfirm = {
+                viewModel.confirmGrouping(candidate)
             }
         )
     }
@@ -268,17 +276,9 @@ private fun EmptyMedicationsState(onAdd: () -> Unit) {
 private fun GroupingPromptDialog(
     candidate: GroupingCandidate,
     onDismiss: () -> Unit,
-    onConfirm: (Int, Int) -> Unit
+    onConfirm: () -> Unit
 ) {
     val strings = LocalAppStrings.current
-    val defaultHour = candidate.minutesA / 60
-    val defaultMinute = candidate.minutesA % 60
-    var timeText by remember(candidate) {
-        mutableStateOf(
-            "${defaultHour.toString().padStart(2, '0')}:${defaultMinute.toString().padStart(2, '0')}"
-        )
-    }
-    val parsed = parseDialogTime(timeText)
 
     AlertDialog(
         onDismissRequest = onDismiss,
@@ -286,22 +286,12 @@ private fun GroupingPromptDialog(
         text = {
             Column(verticalArrangement = Arrangement.spacedBy(8.dp)) {
                 Text(strings.groupTogetherBody)
-                Text("• ${candidate.medicationA.name}")
-                Text("• ${candidate.medicationB.name}")
-                OutlinedTextField(
-                    value = timeText,
-                    onValueChange = { timeText = it },
-                    label = { Text(strings.pickUnifiedTime) },
-                    singleLine = true,
-                    modifier = Modifier.fillMaxWidth()
-                )
+                Text("- ${candidate.medicationA.name}")
+                Text("- ${candidate.medicationB.name}")
             }
         },
         confirmButton = {
-            Button(
-                onClick = { parsed?.let { (h, m) -> onConfirm(h, m) } },
-                enabled = parsed != null
-            ) {
+            Button(onClick = onConfirm) {
                 Text(strings.groupTogetherConfirm)
             }
         },
@@ -311,14 +301,6 @@ private fun GroupingPromptDialog(
             }
         }
     )
-}
-
-private fun parseDialogTime(value: String): Pair<Int, Int>? {
-    val parts = value.trim().split(":")
-    if (parts.size != 2) return null
-    val hour = parts[0].toIntOrNull() ?: return null
-    val minute = parts[1].toIntOrNull() ?: return null
-    return if (hour in 0..23 && minute in 0..59) hour to minute else null
 }
 
 @Composable
@@ -412,8 +394,8 @@ private fun MedicationDetailsDialog(
                 verticalArrangement = Arrangement.spacedBy(8.dp)
             ) {
                 DetailLine(strings.dosage, "${medication.dosage} ${medication.dosageUnit}")
-                if (medication.doseQuantity > 1) {
-                    DetailLine(strings.doseQuantity, medication.doseQuantity.toString())
+                if (medication.doseQuantity > 1.0) {
+                    DetailLine(strings.doseQuantity, formatMedicationAmount(medication.doseQuantity))
                 }
                 if (medication.description.isNotBlank()) {
                     DetailLine(strings.notes, medication.description)

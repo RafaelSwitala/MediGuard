@@ -1,5 +1,10 @@
 package com.rafaelswitala.mediguard.domain.model
 
+/**
+ * Verschiedene Erinnerungsarten: täglich, zeitlich begrenzt, nach Tageszeit oder Intervall.
+ * Mit JSON-Codec für die Serialisierung der jeweiligen Zeitparameter.
+ */
+
 import com.rafaelswitala.mediguard.data.settings.AppLanguage
 import com.rafaelswitala.mediguard.domain.settings.DayPeriodSettings
 import org.json.JSONObject

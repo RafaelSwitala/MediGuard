@@ -1,5 +1,9 @@
 package com.rafaelswitala.mediguard.ui.screens
 
+/**
+ * Design/Sprache-Auswahl, Benachrichtigungsmodus (Stumm/Sound/Alarm), Klingelton und Tageszeiten.
+ */
+
 import android.app.Activity
 import android.app.AlarmManager
 import android.content.Context
@@ -62,6 +66,10 @@ import com.rafaelswitala.mediguard.ui.localization.LocalAppLanguage
 import com.rafaelswitala.mediguard.ui.localization.LocalAppStrings
 import com.rafaelswitala.mediguard.viewmodel.SettingsViewModel
 
+/**
+ * Datei für die Einstellungen.
+ * Hier werden Sprache, Design, Alarmart, Klingelton und Tageszeitbereiche gepflegt.
+ */
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun SettingsScreen(
@@ -248,32 +256,38 @@ private fun DayPeriodSettingsSection(
     language: AppLanguage,
     onSave: (DayPeriodSettings, (Boolean) -> Unit) -> Unit
 ) {
-    var draft by remember(settings) { mutableStateOf(settings) }
+    var draftTexts by remember(settings) {
+        mutableStateOf(
+            DayPeriod.entries.associateWith { period ->
+                val range = settings.rangeFor(period)
+                TimeRangeTextDraft(
+                    start = minutesToTime(range.startMinutes),
+                    end = minutesToTime(range.endMinutes)
+                )
+            }
+        )
+    }
     var gapMessage by remember { mutableStateOf<String?>(null) }
 
     StandardSectionCard(title = strings.dayPeriodSettings) {
         Text(strings.dayPeriodSettingsHint, style = MaterialTheme.typography.bodySmall)
         DayPeriod.entries.forEach { period ->
-            val range = draft.rangeFor(period)
+            val range = draftTexts.getValue(period)
             Text(period.label(language), fontWeight = FontWeight.SemiBold)
             Row(horizontalArrangement = Arrangement.spacedBy(8.dp)) {
                 OutlinedTextField(
-                    value = minutesToTime(range.startMinutes),
+                    value = range.start,
                     onValueChange = { value ->
-                        timeToMinutes(value)?.let { start ->
-                            draft = draft.copyPeriod(period, range.copy(startMinutes = start))
-                        }
+                        draftTexts = draftTexts + (period to range.copy(start = filterTimeInput(value)))
                     },
                     label = { Text(strings.from) },
                     modifier = Modifier.weight(1f),
                     singleLine = true
                 )
                 OutlinedTextField(
-                    value = minutesToTime(range.endMinutes),
+                    value = range.end,
                     onValueChange = { value ->
-                        timeToMinutes(value)?.let { end ->
-                            draft = draft.copyPeriod(period, range.copy(endMinutes = end))
-                        }
+                        draftTexts = draftTexts + (period to range.copy(end = filterTimeInput(value)))
                     },
                     label = { Text(strings.to) },
                     modifier = Modifier.weight(1f),
@@ -283,6 +297,11 @@ private fun DayPeriodSettingsSection(
         }
         gapMessage?.let { Text(it, color = MaterialTheme.colorScheme.error) }
         Button(onClick = {
+            val draft = draftTexts.toDayPeriodSettingsOrNull()
+            if (draft == null) {
+                gapMessage = strings.invalidTime
+                return@Button
+            }
             val validation = draft.validate()
             if (!validation.isValid) {
                 gapMessage = "${strings.dayPeriodGapError} ${validation.gaps.joinToString(", ")}"
@@ -296,6 +315,28 @@ private fun DayPeriodSettingsSection(
             Text(strings.save)
         }
     }
+}
+
+private data class TimeRangeTextDraft(
+    val start: String,
+    val end: String
+)
+
+private fun Map<DayPeriod, TimeRangeTextDraft>.toDayPeriodSettingsOrNull(): DayPeriodSettings? {
+    fun parsedRange(period: DayPeriod): TimeRangeMinutes? {
+        val draft = this[period] ?: return null
+        val start = timeToMinutes(draft.start) ?: return null
+        val end = timeToMinutes(draft.end) ?: return null
+        return TimeRangeMinutes(start, end)
+    }
+
+    return DayPeriodSettings(
+        morning = parsedRange(DayPeriod.MORNING) ?: return null,
+        noon = parsedRange(DayPeriod.NOON) ?: return null,
+        afternoon = parsedRange(DayPeriod.AFTERNOON) ?: return null,
+        evening = parsedRange(DayPeriod.EVENING) ?: return null,
+        night = parsedRange(DayPeriod.NIGHT) ?: return null
+    )
 }
 
 private fun DayPeriodSettings.copyPeriod(period: DayPeriod, range: TimeRangeMinutes): DayPeriodSettings =
@@ -312,6 +353,9 @@ private fun minutesToTime(minutes: Int): String {
     val m = minutes % 60
     return "${h.toString().padStart(2, '0')}:${m.toString().padStart(2, '0')}"
 }
+
+private fun filterTimeInput(value: String): String =
+    value.filter { it.isDigit() || it == ':' }.take(5)
 
 private fun timeToMinutes(value: String): Int? {
     val parts = value.trim().split(":")

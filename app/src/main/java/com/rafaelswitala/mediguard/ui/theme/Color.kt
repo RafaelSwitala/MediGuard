@@ -1,5 +1,10 @@
 package com.rafaelswitala.mediguard.ui.theme
 
+/**
+ * Material Design 3 Farbpalette: Primär, Sekundär, Tertiär, Fehler, Oberfläche, Hintergrund.
+ * Mit Varianten für Hell- und Dunkelmodus.
+ */
+
 import androidx.compose.ui.graphics.Color
 
 // Logo-inspired palette: deep navy, teal and mint.

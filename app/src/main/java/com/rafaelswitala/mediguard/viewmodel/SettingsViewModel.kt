@@ -1,5 +1,10 @@
 package com.rafaelswitala.mediguard.viewmodel
 
+/**
+ * Verwaltet Design (Hell/Dunkel), Sprache, Benachrichtigungsmodus, Klingelton und Tageszeiten.
+ * Speichert Einstellungen in DataStore.
+ */
+
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.rafaelswitala.mediguard.data.settings.AppLanguage

@@ -9,11 +9,8 @@ import kotlinx.coroutines.flow.flow
 import javax.inject.Inject
 
 /**
- * Device Encrypted alarm store.
- *
- * This deliberately uses device-protected SharedPreferences instead of
- * DataStore, because the locked-boot path must not touch anything that can
- * resolve back to credential-encrypted application storage.
+ * SharedPreferences im Device-Encrypted-Speicher für Alarme vor dem Unlock.
+ * Speichert nur technische Daten (Zeitplan-IDs, Trigger-Zeiten) ohne Medikamentennamen.
  */
 class DirectBootAlarmStore @Inject constructor(
     @ApplicationContext context: Context
@@ -59,6 +56,9 @@ class DirectBootAlarmStore @Inject constructor(
             .putLong(LAST_LOCKED_BOOT_COMPLETED_AT, System.currentTimeMillis())
             .commit()
     }
+
+    fun lastLockedBootCompletedAt(): Long =
+        preferences.getLong(LAST_LOCKED_BOOT_COMPLETED_AT, 0L)
 
     suspend fun savePendingLockedAlarm(
         notificationId: Long,

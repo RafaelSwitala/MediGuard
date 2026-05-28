@@ -9,13 +9,17 @@ import com.rafaelswitala.mediguard.data.local.entity.IntakeHistoryEntity
 import com.rafaelswitala.mediguard.data.local.entity.MedicationEntity
 import com.rafaelswitala.mediguard.data.local.entity.MedicationScheduleEntity
 
+/**
+ * Lokale Room-Datenbank für Medikamente, Zeitpläne und Einnahmeverlauf.
+ * Speichert sensible App-Daten im Credential-Encrypted-Bereich.
+ */
 @Database(
     entities = [
         MedicationEntity::class,
         MedicationScheduleEntity::class,
         IntakeHistoryEntity::class
     ],
-    version = 5,
+    version = 6,
     exportSchema = false
 )
 abstract class AppDatabase : RoomDatabase() {

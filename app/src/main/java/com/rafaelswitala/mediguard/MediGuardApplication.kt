@@ -1,5 +1,9 @@
 package com.rafaelswitala.mediguard
 
+/**
+ * App-Start: Stellt Alarme nach Neustart oder Entsperren wieder her.
+ */
+
 import android.app.Application
 import android.content.Context
 import android.os.Build

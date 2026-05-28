@@ -1,5 +1,10 @@
 package com.rafaelswitala.mediguard.alarm
 
+/**
+ * Zeigt Datenschutz-Benachrichtigungen ohne Medikament-Details vor dem Unlock.
+ * Ermöglicht Erinnerungen auch wenn das Gerät gesperrt ist.
+ */
+
 import android.app.AlarmManager
 import android.app.NotificationChannel
 import android.app.NotificationManager
@@ -21,6 +26,10 @@ import com.rafaelswitala.mediguard.domain.model.MedicationSchedule
 import com.rafaelswitala.mediguard.domain.reminder.ReminderPlanFactory
 import com.rafaelswitala.mediguard.domain.settings.DayPeriodSettings
 
+/**
+ * Datei für Direct-Boot-Hilfen.
+ * Plant Alarme aus DE-Daten neu und zeigt vor dem Unlock nur eine neutrale Erinnerung.
+ */
 object DirectBootAlarmScheduler {
     suspend fun scheduleStoredAlarm(
         context: Context,
@@ -150,16 +159,16 @@ object DirectBootReminderNotifier {
             AlarmRingingService.start(
                 context = context,
                 notificationId = notificationId,
-                ringtoneUri = soundUriFor(context, settings.ringtoneUri).toString(),
+                ringtoneUri = soundUriFor(settings.ringtoneUri).toString(),
                 title = title,
                 message = "",
                 scheduleIds = emptyList(),
                 historyIds = emptyList(),
                 scheduledTime = scheduledTime,
-                takenLabel = "Taken",
-                snoozeLabel = "Snooze",
-                changeTimeLabel = "Change time",
-                stopLabel = "Stop alarm"
+                takenLabel = "",
+                snoozeLabel = "",
+                changeTimeLabel = "",
+                stopLabel = context.getString(R.string.stop_alarm)
             )
         }
     }
@@ -195,7 +204,7 @@ object DirectBootReminderNotifier {
 
         if (Build.VERSION.SDK_INT < Build.VERSION_CODES.O) {
             when (alertMode) {
-                AppAlertMode.SOUND_NOTIFICATION -> builder.setSound(soundUriFor(context, ringtoneUri))
+                AppAlertMode.SOUND_NOTIFICATION -> builder.setSound(soundUriFor(ringtoneUri))
                 AppAlertMode.SILENT_NOTIFICATION,
                 AppAlertMode.ALARM -> builder.setSilent(true)
             }
@@ -227,7 +236,7 @@ object DirectBootReminderNotifier {
                 CHANNEL_ID_LOCKED_SILENT
             }
             AppAlertMode.SOUND_NOTIFICATION -> {
-                val soundUri = soundUriFor(context, ringtoneUri)
+                val soundUri = soundUriFor(ringtoneUri)
                 val channelId = "${CHANNEL_ID_LOCKED_SOUND}_${soundUri.hashCode().toString().replace("-", "n")}"
                 val channel = NotificationChannel(
                     channelId,
@@ -249,7 +258,7 @@ object DirectBootReminderNotifier {
         }
     }
 
-    private fun soundUriFor(context: Context, ringtoneUri: String?): Uri =
+    private fun soundUriFor(ringtoneUri: String?): Uri =
         ringtoneUri
             ?.let { runCatching { Uri.parse(it) }.getOrNull() }
             ?: RingtoneManager.getDefaultUri(RingtoneManager.TYPE_ALARM)

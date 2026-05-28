@@ -1,5 +1,9 @@
 package com.rafaelswitala.mediguard.data.local.dao
 
+/**
+ * Direkter Datenbankzugriff: Erinnerungszeiten speichern und abrufen.
+ */
+
 import androidx.room.Dao
 import androidx.room.Delete
 import androidx.room.Insert

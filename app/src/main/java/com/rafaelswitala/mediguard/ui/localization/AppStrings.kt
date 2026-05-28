@@ -1,5 +1,9 @@
 package com.rafaelswitala.mediguard.ui.localization
 
+/**
+ * Zentrale Texte für Deutsch und Englisch (100+ Zeichenfolgen).
+ */
+
 import androidx.compose.runtime.staticCompositionLocalOf
 import com.rafaelswitala.mediguard.data.settings.AppLanguage
 
@@ -98,6 +102,7 @@ data class AppStrings(
     val dayPeriodSettings: String,
     val dayPeriodSettingsHint: String,
     val dayPeriodGapError: String,
+    val invalidTime: String,
     val validationHint: String,
     val stock: String,
     val durationOngoingHint: String,
@@ -217,6 +222,7 @@ val EnglishStrings = AppStrings(
     dayPeriodSettings = "Time-of-day ranges",
     dayPeriodSettingsHint = "Define when morning, noon, afternoon, evening and night apply. All 24 hours must be covered.",
     dayPeriodGapError = "Gaps in coverage:",
+    invalidTime = "Enter valid times in HH:mm format.",
     validationHint = "Enter medication, dosage and a valid reminder time.",
     stock = "Stock",
     durationOngoingHint = "No end date is needed for ongoing medication.",
@@ -234,7 +240,7 @@ val EnglishStrings = AppStrings(
     statusMissed = "Missed",
     statusSnoozed = "Snoozed",
     groupTogetherTitle = "Take together?",
-    groupTogetherBody = "These medications are scheduled close together. Take them at one shared time?",
+    groupTogetherBody = "These medications are scheduled close together. Group their reminders?",
     groupTogetherConfirm = "Yes, group",
     groupTogetherDecline = "No, keep separate",
     pickUnifiedTime = "Shared intake time",
@@ -335,6 +341,7 @@ val GermanStrings = EnglishStrings.copy(
     dayPeriodSettings = "Tageszeit-Bereiche",
     dayPeriodSettingsHint = "Legen Sie fest, wann Morgens, Mittags, Nachmittags, Abends und Nachts gelten. Alle 24 Stunden müssen abgedeckt sein.",
     dayPeriodGapError = "Lücken in der Abdeckung:",
+    invalidTime = "Geben Sie gültige Uhrzeiten im Format HH:mm ein.",
     validationHint = "Geben Sie Medikament, Dosierung und eine gültige Erinnerungszeit ein.",
     stock = "Bestand",
     durationOngoingHint = "Für dauerhafte Medikamente ist kein Enddatum notwendig.",
@@ -352,8 +359,8 @@ val GermanStrings = EnglishStrings.copy(
     statusMissed = "Verpasst",
     statusSnoozed = "Verschoben",
     groupTogetherTitle = "Gleichzeitig einnehmen?",
-    groupTogetherBody = "Diese Medikamente liegen zeitlich nah beieinander. Möchten Sie sie zu einer gemeinsamen Einnahmezeit zusammenfassen?",
-    groupTogetherConfirm = "Ja, gruppieren",
+    groupTogetherBody = "Diese Medikamente liegen zeitlich nah beieinander. Möchten Sie ihre Erinnerungen gemeinsam anzeigen?",
+    groupTogetherConfirm = "Ja, zusammenfassen",
     groupTogetherDecline = "Nein, getrennt lassen",
     pickUnifiedTime = "Gemeinsame Einnahmezeit",
     group = "Gruppe"

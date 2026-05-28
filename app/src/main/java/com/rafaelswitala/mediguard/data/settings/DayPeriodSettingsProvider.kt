@@ -1,5 +1,9 @@
 package com.rafaelswitala.mediguard.data.settings
 
+/**
+ * StateFlow-Provider für Tageszeiten-Einstellungen (Morgen/Mittag/Nachmittag/Abend/Nacht mit Zeiträumen).
+ */
+
 import com.rafaelswitala.mediguard.domain.settings.DayPeriodSettings
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers

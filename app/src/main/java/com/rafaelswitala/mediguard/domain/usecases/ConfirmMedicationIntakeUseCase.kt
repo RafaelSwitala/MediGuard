@@ -1,5 +1,9 @@
 package com.rafaelswitala.mediguard.domain.usecases
 
+/**
+ * Bestätigt die Einnahme eines Medikaments und verringert den Bestand.
+ */
+
 import com.rafaelswitala.mediguard.domain.model.IntakeStatus
 import com.rafaelswitala.mediguard.domain.repository.IntakeHistoryRepository
 import com.rafaelswitala.mediguard.domain.repository.MedicationRepository

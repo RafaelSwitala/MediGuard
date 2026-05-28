@@ -1,5 +1,9 @@
 package com.rafaelswitala.mediguard.ui.components
 
+/**
+ * Zeitingabe-Komponente für Stunden (0-23) und Minuten (0-59) mit Validierung.
+ */
+
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxWidth
@@ -17,10 +21,6 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
 
-/**
- * Time selector component for selecting hours and minutes
- * Returns selected time as pair of (hour, minute)
- */
 @Composable
 fun TimeSelector(
     initialHour: Int = 0,

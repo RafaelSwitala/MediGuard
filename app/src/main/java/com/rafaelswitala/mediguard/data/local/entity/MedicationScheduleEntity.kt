@@ -1,5 +1,9 @@
 package com.rafaelswitala.mediguard.data.local.entity
 
+/**
+ * Datenbanktabelle für Erinnerungszeiten mit Häufigkeit und Zeitparan und Typ.
+ */
+
 import androidx.room.Entity
 import androidx.room.ForeignKey
 import androidx.room.Index

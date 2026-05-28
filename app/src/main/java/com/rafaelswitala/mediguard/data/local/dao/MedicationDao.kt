@@ -10,8 +10,7 @@ import com.rafaelswitala.mediguard.data.local.entity.MedicationEntity
 import kotlinx.coroutines.flow.Flow
 
 /**
- * Data Access Object for Medication entities
- * Provides database operations for medications
+ * DAO für Medikamente.
  */
 @Dao
 interface MedicationDao {
@@ -44,6 +43,9 @@ interface MedicationDao {
 
     @Query("UPDATE medications SET remainingDoses = :remainingDoses WHERE id = :id")
     suspend fun updateRemainingDoses(id: Long, remainingDoses: Int?)
+
+    @Query("UPDATE medications SET remainingDosesDecimal = :remainingDoses WHERE id = :id")
+    suspend fun updateRemainingDosesDecimal(id: Long, remainingDoses: Double?)
 
     @Query("UPDATE medications SET groupName = :groupName WHERE id = :id")
     suspend fun updateMedicationGroup(id: Long, groupName: String?)

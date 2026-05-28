@@ -1,5 +1,10 @@
 package com.rafaelswitala.mediguard.domain.reminder
 
+/**
+ * Erinnerungstypen: BaseReminder, TimedReminder, TimeRangeReminder, IntervalReminder, WeeklyReminder.
+ * Mit ReminderPlanFactory für Typinstanziierung basierend auf Häufigkeit.
+ */
+
 import com.rafaelswitala.mediguard.domain.model.DayOfWeekEnum
 import com.rafaelswitala.mediguard.domain.model.FrequencyType
 import com.rafaelswitala.mediguard.domain.model.MedicationSchedule

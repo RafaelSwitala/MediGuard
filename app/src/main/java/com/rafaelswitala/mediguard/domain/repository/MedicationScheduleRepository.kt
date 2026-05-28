@@ -1,5 +1,9 @@
 package com.rafaelswitala.mediguard.domain.repository
 
+/**
+ * Repository für Erinnerungszeiten: Verwaltung von Zeitplänen für jedes Medikament.
+ */
+
 import com.rafaelswitala.mediguard.domain.model.MedicationSchedule
 import kotlinx.coroutines.flow.Flow
 

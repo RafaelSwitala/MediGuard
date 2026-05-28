@@ -1,5 +1,9 @@
 package com.rafaelswitala.mediguard.data.settings
 
+/**
+ * DataStore-basierte Einstellungen für Theme, Sprache, Benachrichtigungsmodus, Klingelton und Tageszeiten.
+ */
+
 import android.content.Context
 import androidx.datastore.core.DataStore
 import androidx.datastore.preferences.core.Preferences

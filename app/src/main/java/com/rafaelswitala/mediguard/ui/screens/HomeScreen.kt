@@ -1,5 +1,9 @@
 package com.rafaelswitala.mediguard.ui.screens
 
+/**
+ * Dashboard mit fälligen Medikamenten, Bestandswarnungen und nächsten Intakes.
+ */
+
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
@@ -28,6 +32,7 @@ import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.NavigationBar
 import androidx.compose.material3.NavigationBarItem
 import androidx.compose.material3.OutlinedTextField
+import androidx.compose.material3.OutlinedButton
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
 import androidx.compose.material3.TextButton
@@ -57,6 +62,10 @@ import java.text.SimpleDateFormat
 import java.util.Date
 import java.util.Locale
 
+/**
+ * Datei für den Startbildschirm.
+ * Zeigt fällige Einnahmen, niedrigen Bestand und die nächsten Erinnerungen.
+ */
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun HomeScreen(
@@ -140,7 +149,8 @@ fun HomeScreen(
                     items(pendingGroups, key = { group -> group.first().scheduledTime }) { group ->
                         PendingIntakeCard(
                             entries = group,
-                            onTaken = { historyViewModel.confirmIntakes(group.map { it.id }) }
+                            onTaken = { historyViewModel.confirmIntakes(group.map { it.id }) },
+                            onStopAlarm = historyViewModel::stopAlarm
                         )
                     }
                 }
@@ -260,7 +270,8 @@ private fun NoDueMedicationCard() {
 @Composable
 private fun PendingIntakeCard(
     entries: List<IntakeHistory>,
-    onTaken: () -> Unit
+    onTaken: () -> Unit,
+    onStopAlarm: () -> Unit
 ) {
     val strings = LocalAppStrings.current
     Card(
@@ -288,8 +299,13 @@ private fun PendingIntakeCard(
                 "${strings.scheduled}: ${formatHomeDate(entries.first().scheduledTime)}",
                 style = MaterialTheme.typography.bodySmall
             )
-            Button(onClick = onTaken) {
-                Text(strings.markGroupTaken)
+            Row(horizontalArrangement = Arrangement.spacedBy(8.dp)) {
+                Button(onClick = onTaken) {
+                    Text(strings.markGroupTaken)
+                }
+                OutlinedButton(onClick = onStopAlarm) {
+                    Text(strings.stopAlarm)
+                }
             }
         }
     }
@@ -395,11 +411,11 @@ private fun DeleteMedicationDialog(
 private fun RestockDialog(
     medication: Medication,
     onDismiss: () -> Unit,
-    onConfirm: (Int) -> Unit
+    onConfirm: (Double) -> Unit
 ) {
     val strings = LocalAppStrings.current
     var stockText by remember(medication.id) { mutableStateOf("") }
-    val stock = stockText.toIntOrNull()
+    val stock = parseDecimalAmount(stockText)
 
     AlertDialog(
         onDismissRequest = onDismiss,
@@ -407,9 +423,9 @@ private fun RestockDialog(
         text = {
             OutlinedTextField(
                 value = stockText,
-                onValueChange = { stockText = it.filter(Char::isDigit) },
+                onValueChange = { stockText = filterDecimalInput(it) },
                 label = { Text(strings.newStock) },
-                keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Number),
+                keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Decimal),
                 singleLine = true
             )
         },
@@ -428,3 +444,23 @@ private fun RestockDialog(
         }
     )
 }
+
+private fun filterDecimalInput(value: String): String {
+    var hasSeparator = false
+    return value.filter { char ->
+        when {
+            char.isDigit() -> true
+            (char == ',' || char == '.') && !hasSeparator -> {
+                hasSeparator = true
+                true
+            }
+            else -> false
+        }
+    }
+}
+
+private fun parseDecimalAmount(value: String): Double? =
+    value.trim()
+        .replace(',', '.')
+        .toDoubleOrNull()
+        ?.takeIf { it > 0.0 }

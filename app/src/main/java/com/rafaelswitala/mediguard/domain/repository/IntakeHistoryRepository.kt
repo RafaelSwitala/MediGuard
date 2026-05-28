@@ -1,5 +1,9 @@
 package com.rafaelswitala.mediguard.domain.repository
 
+/**
+ * Repository für Einnahmeverlauf: Speichert und verwaltet alle Einnahmebestätigungen.
+ */
+
 import com.rafaelswitala.mediguard.domain.model.IntakeHistory
 import kotlinx.coroutines.flow.Flow
 

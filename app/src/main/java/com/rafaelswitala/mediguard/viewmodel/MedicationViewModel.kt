@@ -1,5 +1,10 @@
 package com.rafaelswitala.mediguard.viewmodel
 
+/**
+ * Verwaltet die Medikamentenliste, Bestand, Gruppierungsvorschläge und Erinnerungszeiten.
+ * Synchronisiert mit Datenbank und Alarm-Scheduler bei Änderungen.
+ */
+
 import androidx.compose.runtime.mutableStateOf
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
@@ -25,6 +30,10 @@ import kotlinx.coroutines.flow.stateIn
 import kotlinx.coroutines.launch
 import javax.inject.Inject
 
+/**
+ * Datei für Medikamentenlisten, Bestand und Gruppierung.
+ * Das ViewModel verbindet UI-Aktionen mit Repositories und Alarmplanung.
+ */
 @HiltViewModel
 class MedicationViewModel @Inject constructor(
     private val medicationRepository: MedicationRepository,
@@ -91,8 +100,13 @@ class MedicationViewModel @Inject constructor(
 
     init {
         viewModelScope.launch {
-            activeMedications.collect { meds ->
+            combine(
+                medicationRepository.getAllActiveMedications(),
+                scheduleRepository.getAllActiveSchedules()
+            ) { meds, schedules -> meds to schedules }
+                .collect { (meds, schedules) ->
                 runGroupCleanup(meds)
+                expandExistingGroups(meds, schedules.groupBy { it.medicationId })
             }
         }
     }
@@ -184,7 +198,7 @@ class MedicationViewModel @Inject constructor(
         }
     }
 
-    fun addStock(medicationId: Long, addedAmount: Int) {
+    fun addStock(medicationId: Long, addedAmount: Double) {
         viewModelScope.launch {
             try {
                 val medication = medicationRepository.getMedicationById(medicationId) ?: return@launch
@@ -203,31 +217,24 @@ class MedicationViewModel @Inject constructor(
     }
 
     fun confirmGrouping(
-        candidate: GroupingCandidate,
-        unifiedHour: Int,
-        unifiedMinute: Int
+        candidate: GroupingCandidate
     ) {
         viewModelScope.launch {
             val medications = activeMedications.value
-            val groupId = MedicationGroupingService.nextAvailableGroupId(medications)
-            listOf(candidate.medicationA.id, candidate.medicationB.id).forEach { medId ->
+            val schedules = scheduleRepository.getAllActiveSchedules().first()
+            val connectedMedicationIds = connectedMedicationIds(
+                root = candidate,
+                medications = medications,
+                schedulesByMedication = schedules.groupBy { it.medicationId }
+            )
+            val groupId = medications
+                .filter { it.id in connectedMedicationIds }
+                .mapNotNull { it.intakeGroupId }
+                .firstOrNull()
+                ?: MedicationGroupingService.nextAvailableGroupId(medications)
+
+            connectedMedicationIds.forEach { medId ->
                 medicationRepository.updateIntakeGroup(medId, groupId)
-                val schedules = scheduleRepository.getSchedulesByMedicationId(medId).first()
-                schedules.forEach { schedule ->
-                    alarmScheduler.cancelAlarm(schedule.id)
-                }
-                scheduleRepository.deleteSchedulesByMedicationId(medId)
-                val unified = MedicationSchedule(
-                    medicationId = medId,
-                    scheduleType = candidate.scheduleA.scheduleType,
-                    scheduleData = buildUnifiedScheduleData(
-                        candidate.scheduleA,
-                        unifiedHour,
-                        unifiedMinute
-                    )
-                )
-                val scheduleId = scheduleMedicationUseCase(unified)
-                alarmScheduler.scheduleAlarm(unified.copy(id = scheduleId, medicationId = medId))
             }
             _pendingGroupingCandidate.value = null
         }
@@ -267,16 +274,48 @@ class MedicationViewModel @Inject constructor(
         }
     }
 
-    private fun buildUnifiedScheduleData(
-        template: MedicationSchedule,
-        hour: Int,
-        minute: Int
-    ): String = when (template.scheduleType) {
-        com.rafaelswitala.mediguard.domain.model.FrequencyType.WEEKLY -> {
-            val days = com.rafaelswitala.mediguard.domain.model.ScheduleDataCodec.readDays(template.scheduleData)
-            com.rafaelswitala.mediguard.domain.model.ScheduleDataCodec.weekly(days, hour, minute)
+    private suspend fun expandExistingGroups(
+        medications: List<Medication>,
+        schedulesByMedication: Map<Long, List<MedicationSchedule>>
+    ) {
+        val mutableGroups = medications.associate { it.id to it.intakeGroupId }.toMutableMap()
+        MedicationGroupingService.findCandidates(medications, schedulesByMedication).forEach { candidate ->
+            val groupA = mutableGroups[candidate.medicationA.id]
+            val groupB = mutableGroups[candidate.medicationB.id]
+            when {
+                groupA != null && groupB == null -> mutableGroups[candidate.medicationB.id] = groupA
+                groupB != null && groupA == null -> mutableGroups[candidate.medicationA.id] = groupB
+                groupA != null && groupB != null && groupA != groupB -> {
+                    mutableGroups.replaceAll { _, groupId -> if (groupId == groupB) groupA else groupId }
+                }
+            }
         }
-        else -> com.rafaelswitala.mediguard.domain.model.ScheduleDataCodec.exactTime(hour, minute)
+        mutableGroups.forEach { (medicationId, groupId) ->
+            val current = medications.firstOrNull { it.id == medicationId }?.intakeGroupId
+            if (current != groupId) {
+                medicationRepository.updateIntakeGroup(medicationId, groupId)
+            }
+        }
+    }
+
+    private fun connectedMedicationIds(
+        root: GroupingCandidate,
+        medications: List<Medication>,
+        schedulesByMedication: Map<Long, List<MedicationSchedule>>
+    ): Set<Long> {
+        val candidates = MedicationGroupingService.findCandidates(medications, schedulesByMedication)
+        val connected = mutableSetOf(root.medicationA.id, root.medicationB.id)
+        var changed: Boolean
+        do {
+            changed = false
+            candidates.forEach { candidate ->
+                val ids = setOf(candidate.medicationA.id, candidate.medicationB.id)
+                if (ids.any { it in connected } && connected.addAll(ids)) {
+                    changed = true
+                }
+            }
+        } while (changed)
+        return connected
     }
 }
 

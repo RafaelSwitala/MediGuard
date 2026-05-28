@@ -1,5 +1,9 @@
 package com.rafaelswitala.mediguard
 
+/**
+ * Hauptaktivität mit Jetpack Compose UI und Berechtigungshandling (Benachrichtigungen, exakte Alarme).
+ */
+
 import android.Manifest
 import android.app.AlarmManager
 import android.content.Context

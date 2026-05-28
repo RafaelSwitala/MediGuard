@@ -1,5 +1,9 @@
 package com.rafaelswitala.mediguard.ui.theme
 
+/**
+ * 6er-Farbpalette zur visuellen Unterscheidung von Medikamentengruppen.
+ */
+
 import androidx.compose.ui.graphics.Color
 
 object IntakeGroupColors {

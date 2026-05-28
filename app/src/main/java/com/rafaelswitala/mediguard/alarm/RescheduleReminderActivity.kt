@@ -1,5 +1,9 @@
 package com.rafaelswitala.mediguard.alarm
 
+/**
+ * Zeitpicker-Dialog zur manuellen Umplanung einer einzelnen Erinnerung.
+ */
+
 import android.app.TimePickerDialog
 import android.os.Bundle
 import androidx.activity.ComponentActivity

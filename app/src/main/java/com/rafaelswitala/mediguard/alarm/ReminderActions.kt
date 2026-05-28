@@ -1,5 +1,9 @@
 package com.rafaelswitala.mediguard.alarm
 
+/**
+ * Konstanten für Alarm-Intent-Extras (Zeitplan-IDs, Benachrichtigungs-IDs, History-IDs).
+ */
+
 object ReminderActions {
     const val ACTION_RECURRING_ALARM = "com.rafaelswitala.mediguard.action.RECURRING_ALARM"
     const val ACTION_ONE_TIME_REMINDER = "com.rafaelswitala.mediguard.action.ONE_TIME_REMINDER"

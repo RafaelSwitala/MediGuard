@@ -1,5 +1,9 @@
 package com.rafaelswitala.mediguard.ui.screens
 
+/**
+ * Einnahmeverlauf mit Adhäranzquote in Prozenten und Bestätigung ausstehender Intakes.
+ */
+
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.fillMaxSize

@@ -1,5 +1,10 @@
 package com.rafaelswitala.mediguard.alarm
 
+/**
+ * Dienst mit Benachrichtigung und Audioausgabe, wenn eine Medikamentenerinnerung fällig ist.
+ * Bietet Buttons zum Bestätigen, Verschieben oder zeitlich neu Planen.
+ */
+
 import android.app.Notification
 import android.app.NotificationChannel
 import android.app.NotificationManager

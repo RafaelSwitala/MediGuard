@@ -1,10 +1,17 @@
 package com.rafaelswitala.mediguard.viewmodel
 
+/**
+ * Zeigt Einnahmeverlauf mit Adhäranzquote und Möglichkeit zum Bestätigen ausstehender Intakes.
+ */
+
+import android.content.Context
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
+import com.rafaelswitala.mediguard.alarm.AlarmRingingService
 import com.rafaelswitala.mediguard.domain.model.IntakeHistory
 import com.rafaelswitala.mediguard.domain.repository.IntakeHistoryRepository
 import com.rafaelswitala.mediguard.domain.usecases.ConfirmMedicationIntakeUseCase
+import dagger.hilt.android.qualifiers.ApplicationContext
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.flow.SharingStarted
 import kotlinx.coroutines.flow.StateFlow
@@ -14,11 +21,12 @@ import kotlinx.coroutines.launch
 import javax.inject.Inject
 
 /**
- * ViewModel for medication intake history
- * Manages history data and user interactions
+ * Datei für den Einnahmeverlauf.
+ * Verwaltet Historie, Bestätigungen und das Stoppen eines laufenden Alarms aus der App.
  */
 @HiltViewModel
 class HistoryViewModel @Inject constructor(
+    @ApplicationContext private val context: Context,
     private val intakeHistoryRepository: IntakeHistoryRepository,
     private val confirmIntakeUseCase: ConfirmMedicationIntakeUseCase
 ) : ViewModel() {
@@ -62,6 +70,7 @@ class HistoryViewModel @Inject constructor(
     fun confirmIntake(intakeHistoryId: Long) {
         viewModelScope.launch {
             try {
+                AlarmRingingService.stop(context)
                 confirmIntakeUseCase(intakeHistoryId)
                 _uiState.value = _uiState.value.copy(
                     successMessage = "Intake confirmed"
@@ -77,6 +86,7 @@ class HistoryViewModel @Inject constructor(
     fun confirmIntakes(intakeHistoryIds: List<Long>) {
         viewModelScope.launch {
             try {
+                AlarmRingingService.stop(context)
                 intakeHistoryIds.forEach { intakeHistoryId ->
                     confirmIntakeUseCase(intakeHistoryId)
                 }
@@ -89,6 +99,10 @@ class HistoryViewModel @Inject constructor(
                 )
             }
         }
+    }
+
+    fun stopAlarm() {
+        AlarmRingingService.stop(context)
     }
 
     fun clearMessages() {
